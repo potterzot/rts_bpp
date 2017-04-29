@@ -1,7 +1,7 @@
 /* Driver for Realtek PCI-Express card reader
  * Header file
  *
- * Copyright(c) 2009 Realtek Semiconductor Corp. All rights reserved.  
+ * Copyright(c) 2009-2013 Realtek Semiconductor Corp. All rights reserved.
  *
  * This program is free software; you can redistribute it and/or modify it
  * under the terms of the GNU General Public License as published by the
@@ -14,11 +14,11 @@
  * General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License along
- * with this program; if not, see <http:
+ * with this program; if not, see <http://www.gnu.org/licenses/>.
  *
  * Author:
- *   wwang (wei_wang@realsil.com.cn)
- *   No. 450, Shenhu Road, Suzhou Industry Park, Suzhou, China
+ *   Wei WANG (wei_wang@realsil.com.cn)
+ *   Micky Ching (micky_ching@realsil.com.cn)
  */
 
 #ifndef __REALTEK_RTSX_MS_H
@@ -32,6 +32,7 @@
 
 #define	WRT_PRTCT		0x01
 
+/* Error Code */
 #define	MS_NO_ERROR				0x00
 #define	MS_CRC16_ERROR				0x80
 #define	MS_TO_ERROR				0x40
@@ -43,6 +44,7 @@
 #define	MS_BREQ_ERROR				0x01
 #define	MS_NOT_FOUND				0x03
 
+/* Transfer Protocol Command */
 #define READ_PAGE_DATA				0x02
 #define READ_REG				0x04
 #define	GET_INT					0x07
@@ -148,24 +150,24 @@
 #define	NOT_BOOT_BLOCK		0x4
 #define	NOT_TRANSLATION_TABLE	0x8
 
-#define	HEADER_ID0		PPBUF_BASE2			
-#define	HEADER_ID1		PPBUF_BASE2 + 1			
-#define	DISABLED_BLOCK0		PPBUF_BASE2 + 0x170 + 4		
-#define	DISABLED_BLOCK1		PPBUF_BASE2 + 0x170 + 5		
-#define	DISABLED_BLOCK2		PPBUF_BASE2 + 0x170 + 6		
-#define	DISABLED_BLOCK3		PPBUF_BASE2 + 0x170 + 7		
-#define	BLOCK_SIZE_0		PPBUF_BASE2 + 0x1a0 + 2		
-#define	BLOCK_SIZE_1		PPBUF_BASE2 + 0x1a0 + 3		
-#define	BLOCK_COUNT_0		PPBUF_BASE2 + 0x1a0 + 4		
-#define	BLOCK_COUNT_1		PPBUF_BASE2 + 0x1a0 + 5		
-#define	EBLOCK_COUNT_0		PPBUF_BASE2 + 0x1a0 + 6		
-#define	EBLOCK_COUNT_1		PPBUF_BASE2 + 0x1a0 + 7		
-#define	PAGE_SIZE_0		PPBUF_BASE2 + 0x1a0 + 8		
-#define	PAGE_SIZE_1		PPBUF_BASE2 + 0x1a0 + 9		
+#define	HEADER_ID0		PPBUF_BASE2
+#define	HEADER_ID1		(PPBUF_BASE2 + 1)
+#define	DISABLED_BLOCK0		(PPBUF_BASE2 + 0x170 + 4)
+#define	DISABLED_BLOCK1		(PPBUF_BASE2 + 0x170 + 5)
+#define	DISABLED_BLOCK2		(PPBUF_BASE2 + 0x170 + 6)
+#define	DISABLED_BLOCK3		(PPBUF_BASE2 + 0x170 + 7)
+#define	BLOCK_SIZE_0		(PPBUF_BASE2 + 0x1a0 + 2)
+#define	BLOCK_SIZE_1		(PPBUF_BASE2 + 0x1a0 + 3)
+#define	BLOCK_COUNT_0		(PPBUF_BASE2 + 0x1a0 + 4)
+#define	BLOCK_COUNT_1		(PPBUF_BASE2 + 0x1a0 + 5)
+#define	EBLOCK_COUNT_0		(PPBUF_BASE2 + 0x1a0 + 6)
+#define	EBLOCK_COUNT_1		(PPBUF_BASE2 + 0x1a0 + 7)
+#define	PAGE_SIZE_0		(PPBUF_BASE2 + 0x1a0 + 8)
+#define	PAGE_SIZE_1		(PPBUF_BASE2 + 0x1a0 + 9)
 
-#define MS_Device_Type		PPBUF_BASE2 + 0x1D8		
+#define MS_Device_Type		(PPBUF_BASE2 + 0x1D8)
 
-#define	MS_4bit_Support	PPBUF_BASE2 + 0x1D3			
+#define	MS_4bit_Support		(PPBUF_BASE2 + 0x1D3)
 
 #define setPS_NG	1
 #define setPS_Error	0
@@ -192,16 +194,18 @@
 #define FORMAT_FAIL		1
 #define FORMAT_IN_PROGRESS	2
 
-#define	MS_SET_BAD_BLOCK_FLG(ms_card)	(ms_card)->multi_flag |= 0x80
-#define MS_CLR_BAD_BLOCK_FLG(ms_card)	(ms_card)->multi_flag &= 0x7F
-#define MS_TST_BAD_BLOCK_FLG(ms_card)	(ms_card)->multi_flag & 0x80
+#define	MS_SET_BAD_BLOCK_FLG(ms_card)	((ms_card)->multi_flag |= 0x80)
+#define MS_CLR_BAD_BLOCK_FLG(ms_card)	((ms_card)->multi_flag &= 0x7F)
+#define MS_TST_BAD_BLOCK_FLG(ms_card)	((ms_card)->multi_flag & 0x80)
 
 void mspro_polling_format_status(struct rtsx_chip *chip);
 
 void mspro_stop_seq_mode(struct rtsx_chip *chip);
 int reset_ms_card(struct rtsx_chip *chip);
-int ms_rw(struct scsi_cmnd *srb, struct rtsx_chip *chip, u32 start_sector, u16 sector_cnt);
-int mspro_format(struct scsi_cmnd *srb, struct rtsx_chip *chip, int short_data_len, int quick_format);
+int ms_rw(struct scsi_cmnd *srb, struct rtsx_chip *chip,
+	u32 start_sector, u16 sector_cnt);
+int mspro_format(struct scsi_cmnd *srb, struct rtsx_chip *chip,
+		int short_data_len, bool quick_format);
 void ms_free_l2p_tbl(struct rtsx_chip *chip);
 void ms_cleanup_work(struct rtsx_chip *chip);
 int ms_power_off_card3v3(struct rtsx_chip *chip);
@@ -220,5 +224,4 @@ int mg_get_ICV(struct scsi_cmnd *srb, struct rtsx_chip *chip);
 int mg_set_ICV(struct scsi_cmnd *srb, struct rtsx_chip *chip);
 #endif
 
-#endif  
-
+#endif  /* __REALTEK_RTSX_MS_H */

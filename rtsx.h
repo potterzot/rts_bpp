@@ -1,7 +1,7 @@
 /* Driver for Realtek PCI-Express card reader
  * Header file
  *
- * Copyright(c) 2009 Realtek Semiconductor Corp. All rights reserved.  
+ * Copyright(c) 2009-2013 Realtek Semiconductor Corp. All rights reserved.
  *
  * This program is free software; you can redistribute it and/or modify it
  * under the terms of the GNU General Public License as published by the
@@ -14,32 +14,30 @@
  * General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License along
- * with this program; if not, see <http:
+ * with this program; if not, see <http://www.gnu.org/licenses/>.
  *
  * Author:
- *   wwang (wei_wang@realsil.com.cn)
- *   No. 450, Shenhu Road, Suzhou Industry Park, Suzhou, China
+ *   Wei WANG (wei_wang@realsil.com.cn)
+ *   Micky Ching (micky_ching@realsil.com.cn)
  */
 
 #ifndef __REALTEK_RTSX_H
 #define __REALTEK_RTSX_H
 
-#include <asm/io.h>
-#include <asm/bitops.h>
+#include <linux/io.h>
+#include <linux/bitops.h>
 #include <linux/delay.h>
 #include <linux/interrupt.h>
 #include <linux/kernel.h>
-#include <linux/version.h>
 #include <linux/module.h>
 #include <linux/moduleparam.h>
-#include <linux/init.h>
 #include <linux/slab.h>
 #include <linux/pci.h>
 #include <linux/mutex.h>
 #include <linux/cdrom.h>
 #include <linux/workqueue.h>
 #include <linux/timer.h>
-#include <linux/time.h>
+#include <linux/time64.h>
 
 #include <scsi/scsi.h>
 #include <scsi/scsi_cmnd.h>
@@ -48,33 +46,7 @@
 #include <scsi/scsi_eh.h>
 #include <scsi/scsi_host.h>
 
-#include "debug.h"
-#include "trace.h"
-#include "general.h"
-
 #define CR_DRIVER_NAME		"rts_bpp"
-
-
-#if LINUX_VERSION_CODE < KERNEL_VERSION(2, 6, 14)
-#ifdef CONFIG_PCI
-#undef pci_intx
-#define pci_intx(pci,x)
-#endif
-#endif
-
-#if LINUX_VERSION_CODE < KERNEL_VERSION(2, 6, 24)
-#define sg_page(sg)	(sg)->page
-#endif
-
-#if LINUX_VERSION_CODE < KERNEL_VERSION(2, 6, 25)
-#define scsi_set_resid(srb, residue)	((srb)->resid = (residue))
-#define scsi_get_resid(srb)		((srb)->resid)
-
-static inline unsigned scsi_bufflen(struct scsi_cmnd *cmd)
-{
-	return cmd->request_bufflen;
-}
-#endif
 
 /*
  * macros for easy use
@@ -98,9 +70,12 @@ static inline unsigned scsi_bufflen(struct scsi_cmnd *cmd)
 #define rtsx_write_config_byte(chip, where, val) \
 	pci_write_config_byte((chip)->rtsx->pci, where, val)
 
-#define wait_timeout_x(task_state,msecs)	  set_current_state((task_state)); \
-						schedule_timeout((msecs) * HZ / 1000)
-#define wait_timeout(msecs)		wait_timeout_x(TASK_INTERRUPTIBLE, (msecs))
+#define wait_timeout_x(task_state, msecs)		\
+do {							\
+		set_current_state((task_state));	\
+		schedule_timeout((msecs) * HZ / 1000);	\
+} while (0)
+#define wait_timeout(msecs)	wait_timeout_x(TASK_INTERRUPTIBLE, (msecs))
 
 
 #define STATE_TRANS_NONE	0
@@ -112,81 +87,82 @@ static inline unsigned scsi_bufflen(struct scsi_cmnd *cmd)
 #define TRANS_RESULT_OK		1
 #define TRANS_RESULT_FAIL	2
 
-#define SCSI_LUN(srb)		(srb)->device->lun
-
-#define rtsx_alloc_dma_buf(chip, size, flag)	kmalloc((size), (flag))
-#define rtsx_free_dma_buf(chip, ptr)		kfree((ptr))
+#define SCSI_LUN(srb)		((srb)->device->lun)
 
 typedef unsigned long DELAY_PARA_T;
 
 struct rtsx_chip;
 
 struct rtsx_dev {
-	struct pci_dev 		*pci;
+	struct pci_dev *pci;
 
-	
-	unsigned long 		addr;
-	void __iomem 		*remap_addr;
-	int 			irq;
+	/* pci resources */
+	unsigned long		addr;
+	void __iomem		*remap_addr;
+	int irq;
 
-	
-	spinlock_t 		reg_lock;
-	
-	struct task_struct	*ctl_thread;	 
-	struct task_struct	*polling_thread; 
+	/* locks */
+	spinlock_t		reg_lock;
 
-	
-	struct completion	cmnd_ready;	 
-	struct completion	control_exit;	 
-	struct completion	polling_exit;	 
-	struct completion	notify;		 
-	struct completion	scanning_done;	 
+	struct task_struct	*ctl_thread;	 /* the control thread   */
+	struct task_struct	*polling_thread; /* the polling thread   */
 
-	wait_queue_head_t	delay_wait;	 
+	/* mutual exclusion and synchronization structures */
+	struct completion	cmnd_ready;	 /* to sleep thread on	    */
+	struct completion	control_exit;	 /* control thread exit	    */
+	struct completion	polling_exit;	 /* polling thread exit	    */
+	struct completion	notify;		 /* thread begin/end	    */
+	struct completion	scanning_done;	 /* wait for scan thread    */
+
+	wait_queue_head_t	delay_wait;	 /* wait during scan, reset */
 	struct mutex		dev_mutex;
 
-	
-	void 			*rtsx_resv_buf;
-	dma_addr_t 		rtsx_resv_buf_addr;
+	/* host reserved buffer */
+	void			*rtsx_resv_buf;
+	dma_addr_t		rtsx_resv_buf_addr;
 
 	char			trans_result;
 	char			trans_state;
 
-	struct completion 	*done;
-	
-	u32 			check_card_cd;
+	struct completion	*done;
+	/* Whether interrupt handler should care card cd info */
+	u32			check_card_cd;
 
-	struct rtsx_chip 	*chip;
+	struct rtsx_chip	*chip;
 };
 
 typedef struct rtsx_dev rtsx_dev_t;
 
-
-static inline struct Scsi_Host *rtsx_to_host(struct rtsx_dev *dev) {
+/* Convert between rtsx_dev and the corresponding Scsi_Host */
+static inline struct Scsi_Host *rtsx_to_host(struct rtsx_dev *dev)
+{
 	return container_of((void *) dev, struct Scsi_Host, hostdata);
 }
-static inline struct rtsx_dev *host_to_rtsx(struct Scsi_Host *host) {
+static inline struct rtsx_dev *host_to_rtsx(struct Scsi_Host *host)
+{
 	return (struct rtsx_dev *) host->hostdata;
 }
 
 static inline void get_current_time(u8 *timeval_buf, int buf_len)
 {
-	struct timeval tv;
+	struct timespec64 ts64;
+	u32 tv_usec;
 
-	if (!timeval_buf || (buf_len < 8)) {
+	if (!timeval_buf || (buf_len < 8))
 		return;
-	}
 
-	do_gettimeofday(&tv);
+	getnstimeofday64(&ts64);
 
-	timeval_buf[0] = (u8)(tv.tv_sec >> 24);
-	timeval_buf[1] = (u8)(tv.tv_sec >> 16);
-	timeval_buf[2] = (u8)(tv.tv_sec >> 8);
-	timeval_buf[3] = (u8)(tv.tv_sec);
-	timeval_buf[4] = (u8)(tv.tv_usec >> 24);
-	timeval_buf[5] = (u8)(tv.tv_usec >> 16);
-	timeval_buf[6] = (u8)(tv.tv_usec >> 8);
-	timeval_buf[7] = (u8)(tv.tv_usec);
+	tv_usec = ts64.tv_nsec/NSEC_PER_USEC;
+
+	timeval_buf[0] = (u8)(ts64.tv_sec >> 24);
+	timeval_buf[1] = (u8)(ts64.tv_sec >> 16);
+	timeval_buf[2] = (u8)(ts64.tv_sec >> 8);
+	timeval_buf[3] = (u8)(ts64.tv_sec);
+	timeval_buf[4] = (u8)(tv_usec >> 24);
+	timeval_buf[5] = (u8)(tv_usec >> 16);
+	timeval_buf[6] = (u8)(tv_usec >> 8);
+	timeval_buf[7] = (u8)(tv_usec);
 }
 
 /* The scsi_lock() and scsi_unlock() macros protect the sm_state and the
@@ -197,24 +173,19 @@ static inline void get_current_time(u8 *timeval_buf, int buf_len)
 #define lock_state(chip)	spin_lock_irq(&((chip)->rtsx->reg_lock))
 #define unlock_state(chip)	spin_unlock_irq(&((chip)->rtsx->reg_lock))
 
-
+/* struct scsi_cmnd transfer buffer access utilities */
 enum xfer_buf_dir	{TO_XFER_BUF, FROM_XFER_BUF};
 
-static inline void EnableHostASPM(struct rtsx_chip *chip)
-{
-}
+int rtsx_read_pci_cfg_byte(u8 bus, u8 dev, u8 func, u8 offset, u8 *val);
 
-static inline void DisableHostASPM(struct rtsx_chip *chip)
-{
-}
+#define _MSG_TRACE
 
-static inline void SetHostASPM(struct rtsx_chip *chip, u8 val)
-{
-}
+#include "trace.h"
+#include "rtsx_chip.h"
+#include "rtsx_transport.h"
+#include "rtsx_scsi.h"
+#include "rtsx_card.h"
+#include "rtsx_sys.h"
+#include "general.h"
 
-static inline void GetHostASPM(struct rtsx_chip *chip, u8 *val)
-{
-}
-
-#endif  
-
+#endif  /* __REALTEK_RTSX_H */

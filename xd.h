@@ -1,7 +1,7 @@
 /* Driver for Realtek PCI-Express card reader
  * Header file
  *
- * Copyright(c) 2009 Realtek Semiconductor Corp. All rights reserved.  
+ * Copyright(c) 2009-2013 Realtek Semiconductor Corp. All rights reserved.
  *
  * This program is free software; you can redistribute it and/or modify it
  * under the terms of the GNU General Public License as published by the
@@ -14,11 +14,11 @@
  * General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License along
- * with this program; if not, see <http:
+ * with this program; if not, see <http://www.gnu.org/licenses/>.
  *
  * Author:
- *   wwang (wei_wang@realsil.com.cn)
- *   No. 450, Shenhu Road, Suzhou Industry Park, Suzhou, China
+ *   Wei WANG (wei_wang@realsil.com.cn)
+ *   Micky Ching (micky_ching@realsil.com.cn)
  */
 
 #ifndef __REALTEK_RTSX_XD_H
@@ -26,6 +26,7 @@
 
 #define	XD_DELAY_WRITE
 
+/* Error Codes */
 #define	XD_NO_ERROR			0x00
 #define	XD_NO_MEMORY			0x80
 #define	XD_PRG_ERROR			0x40
@@ -36,6 +37,7 @@
 #define	XD_ECC_ERROR			0x02
 #define	XD_TO_ERROR			0x01
 
+/* XD Commands */
 #define	READ1_1				0x00
 #define	READ1_2				0x01
 #define	READ2				0x50
@@ -59,6 +61,7 @@
 #define	CHG_DAT_IN_1			0x85
 #define	CACHE_PRG			0x15
 
+/* Redundant Area Related */
 #define XD_EXTRA_SIZE			0x10
 #define XD_2K_EXTRA_SIZE		0x40
 
@@ -102,38 +105,40 @@
 #define	Sect_Per_Page			4
 #define	XD_ADDR_MODE_2C			XD_ADDR_MODE_2A
 
-#define ZONE0_BAD_BLOCK 		23
-#define NOT_ZONE0_BAD_BLOCK 		24
+#define ZONE0_BAD_BLOCK			23
+#define NOT_ZONE0_BAD_BLOCK		24
 
 #define	XD_RW_ADDR			0x01
 #define	XD_ERASE_ADDR			0x02
 
+#define	XD_PAGE_512(xd_card)		\
+do {					\
+	(xd_card)->block_shift = 5;	\
+	(xd_card)->page_off = 0x1F;	\
+} while (0)
 
-
-#define	XD_PAGE_512(xd_card)		(xd_card)->block_shift = 5; (xd_card)->page_off = 0x1F
-
-#define	XD_SET_BAD_NEWBLK(xd_card)	(xd_card)->multi_flag |= 0x01
-#define	XD_CLR_BAD_NEWBLK(xd_card)	(xd_card)->multi_flag &= ~0x01
+#define	XD_SET_BAD_NEWBLK(xd_card)	((xd_card)->multi_flag |= 0x01)
+#define	XD_CLR_BAD_NEWBLK(xd_card)	((xd_card)->multi_flag &= ~0x01)
 #define	XD_CHK_BAD_NEWBLK(xd_card)	((xd_card)->multi_flag & 0x01)
 
-#define	XD_SET_BAD_OLDBLK(xd_card)	(xd_card)->multi_flag |= 0x02
-#define	XD_CLR_BAD_OLDBLK(xd_card)	(xd_card)->multi_flag &= ~0x02
+#define	XD_SET_BAD_OLDBLK(xd_card)	((xd_card)->multi_flag |= 0x02)
+#define	XD_CLR_BAD_OLDBLK(xd_card)	((xd_card)->multi_flag &= ~0x02)
 #define	XD_CHK_BAD_OLDBLK(xd_card)	((xd_card)->multi_flag & 0x02)
 
-#define	XD_SET_MBR_FAIL(xd_card)	(xd_card)->multi_flag |= 0x04
-#define	XD_CLR_MBR_FAIL(xd_card)	(xd_card)->multi_flag &= ~0x04
+#define	XD_SET_MBR_FAIL(xd_card)	((xd_card)->multi_flag |= 0x04)
+#define	XD_CLR_MBR_FAIL(xd_card)	((xd_card)->multi_flag &= ~0x04)
 #define	XD_CHK_MBR_FAIL(xd_card)	((xd_card)->multi_flag & 0x04)
 
-#define	XD_SET_ECC_FLD_ERR(xd_card)	(xd_card)->multi_flag |= 0x08
-#define	XD_CLR_ECC_FLD_ERR(xd_card)	(xd_card)->multi_flag &= ~0x08
+#define	XD_SET_ECC_FLD_ERR(xd_card)	((xd_card)->multi_flag |= 0x08)
+#define	XD_CLR_ECC_FLD_ERR(xd_card)	((xd_card)->multi_flag &= ~0x08)
 #define	XD_CHK_ECC_FLD_ERR(xd_card)	((xd_card)->multi_flag & 0x08)
 
-#define	XD_SET_4MB(xd_card)		(xd_card)->multi_flag |= 0x10
-#define	XD_CLR_4MB(xd_card)		(xd_card)->multi_flag &= ~0x10
+#define	XD_SET_4MB(xd_card)		((xd_card)->multi_flag |= 0x10)
+#define	XD_CLR_4MB(xd_card)		((xd_card)->multi_flag &= ~0x10)
 #define	XD_CHK_4MB(xd_card)		((xd_card)->multi_flag & 0x10)
 
-#define	XD_SET_ECC_ERR(xd_card)		(xd_card)->multi_flag |= 0x40
-#define	XD_CLR_ECC_ERR(xd_card)		(xd_card)->multi_flag &= ~0x40
+#define	XD_SET_ECC_ERR(xd_card)		((xd_card)->multi_flag |= 0x40)
+#define	XD_CLR_ECC_ERR(xd_card)		((xd_card)->multi_flag &= ~0x40)
 #define	XD_CHK_ECC_ERR(xd_card)		((xd_card)->multi_flag & 0x40)
 
 #define PAGE_STATUS		0
@@ -159,25 +164,25 @@
 #define	CIS0_8			8
 #define	CIS0_9			9
 #define	CIS1_0			256
-#define	CIS1_1			256 + 1
-#define	CIS1_2			256 + 2
-#define	CIS1_3			256 + 3
-#define	CIS1_4			256 + 4
-#define	CIS1_5			256 + 5
-#define	CIS1_6			256 + 6
-#define	CIS1_7			256 + 7
-#define	CIS1_8			256 + 8
-#define	CIS1_9			256 + 9
+#define	CIS1_1			(256 + 1)
+#define	CIS1_2			(256 + 2)
+#define	CIS1_3			(256 + 3)
+#define	CIS1_4			(256 + 4)
+#define	CIS1_5			(256 + 5)
+#define	CIS1_6			(256 + 6)
+#define	CIS1_7			(256 + 7)
+#define	CIS1_8			(256 + 8)
+#define	CIS1_9			(256 + 9)
 
 int reset_xd_card(struct rtsx_chip *chip);
 #ifdef XD_DELAY_WRITE
 int xd_delay_write(struct rtsx_chip *chip);
 #endif
-int xd_rw(struct scsi_cmnd *srb, struct rtsx_chip *chip, u32 start_sector, u16 sector_cnt);
+int xd_rw(struct scsi_cmnd *srb, struct rtsx_chip *chip,
+	u32 start_sector, u16 sector_cnt);
 void xd_free_l2p_tbl(struct rtsx_chip *chip);
 void xd_cleanup_work(struct rtsx_chip *chip);
 int xd_power_off_card3v3(struct rtsx_chip *chip);
 int release_xd_card(struct rtsx_chip *chip);
 
-#endif  
-
+#endif  /* __REALTEK_RTSX_XD_H */
