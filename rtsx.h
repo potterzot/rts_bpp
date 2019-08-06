@@ -40,6 +40,7 @@
 #include <linux/workqueue.h>
 #include <linux/timer.h>
 #include <linux/time.h>
+#include <linux/time64.h>
 
 #include <scsi/scsi.h>
 #include <scsi/scsi_cmnd.h>
@@ -172,12 +173,16 @@ static inline struct rtsx_dev *host_to_rtsx(struct Scsi_Host *host) {
 static inline void get_current_time(u8 *timeval_buf, int buf_len)
 {
 	struct timeval tv;
+	struct timespec64 ts;
 
 	if (!timeval_buf || (buf_len < 8)) {
 		return;
 	}
 
-	do_gettimeofday(&tv);
+	ktime_get_real_ts64(&ts);
+
+	tv.tv_sec = ts.tv_sec;
+	tv.tv_usec = ts.tv_nsec/1000;
 
 	timeval_buf[0] = (u8)(tv.tv_sec >> 24);
 	timeval_buf[1] = (u8)(tv.tv_sec >> 16);
