@@ -1,7 +1,7 @@
 /* Driver for Realtek PCI-Express card reader
  * Header file
  *
- * Copyright(c) 2009-2013 Realtek Semiconductor Corp. All rights reserved.
+ * Copyright(c) 2009 Realtek Semiconductor Corp. All rights reserved.  
  *
  * This program is free software; you can redistribute it and/or modify it
  * under the terms of the GNU General Public License as published by the
@@ -14,44 +14,37 @@
  * General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License along
- * with this program; if not, see <http://www.gnu.org/licenses/>.
+ * with this program; if not, see <http:
  *
  * Author:
- *   Wei WANG (wei_wang@realsil.com.cn)
- *   Micky Ching (micky_ching@realsil.com.cn)
+ *   wwang (wei_wang@realsil.com.cn)
+ *   No. 450, Shenhu Road, Suzhou Industry Park, Suzhou, China
  */
 
 #ifndef __REALTEK_RTSX_CARD_H
 #define __REALTEK_RTSX_CARD_H
 
+#include "debug.h"
 #include "rtsx.h"
 #include "rtsx_chip.h"
 #include "rtsx_transport.h"
 #include "sd.h"
 
 #define SSC_POWER_DOWN		0x01
-#define SD_OC_POWER_DOWN	0x02
-#define MS_OC_POWER_DOWN	0x04
-#define ALL_POWER_DOWN		0x07
-#define OC_POWER_DOWN		0x06
+#define ALL_POWER_DOWN		0x03
+#define OC_POWER_DOWN		0x02
 
 #define PMOS_STRG_MASK		0x10
 #define PMOS_STRG_800mA		0x10
 #define PMOS_STRG_400mA		0x00
 
-#define POWER_OFF		0x03
-#define PARTIAL_POWER_ON	0x01
+#define POWER_OFF		0x0F
+#define POWER_5_PERCENT_ON	0x0E
+#define POWER_10_PERCENT_ON	0x0C
+#define POWER_15_PERCENT_ON	0x08
 #define POWER_ON		0x00
+#define POWER_MASK		0x0F
 
-#define MS_POWER_OFF		0x0C
-#define MS_PARTIAL_POWER_ON	0x04
-#define MS_POWER_ON		0x00
-#define MS_POWER_MASK		0x0C
-
-#define SD_POWER_OFF		0x03
-#define SD_PARTIAL_POWER_ON	0x01
-#define SD_POWER_ON		0x00
-#define SD_POWER_MASK		0x03
 
 #define XD_OUTPUT_EN		0x02
 #define SD_OUTPUT_EN		0x04
@@ -83,52 +76,53 @@
 
 #define CHANGE_CLK		0x01
 
+
 #define	SD_CRC7_ERR			0x80
 #define	SD_CRC16_ERR			0x40
 #define	SD_CRC_WRITE_ERR		0x20
-#define	SD_CRC_WRITE_ERR_MASK		0x1C
+#define	SD_CRC_WRITE_ERR_MASK	    	0x1C
 #define	GET_CRC_TIME_OUT		0x02
 #define	SD_TUNING_COMPARE_ERR		0x01
 
 #define	SD_RSP_80CLK_TIMEOUT		0x01
 
 #define	SD_CLK_TOGGLE_EN		0x80
-#define	SD_CLK_FORCE_STOP		0x40
-#define	SD_DAT3_STATUS			0x10
-#define	SD_DAT2_STATUS			0x08
-#define	SD_DAT1_STATUS			0x04
-#define	SD_DAT0_STATUS			0x02
+#define	SD_CLK_FORCE_STOP	        0x40
+#define	SD_DAT3_STATUS		        0x10
+#define	SD_DAT2_STATUS		        0x08
+#define	SD_DAT1_STATUS		        0x04
+#define	SD_DAT0_STATUS		        0x02
 #define	SD_CMD_STATUS			0x01
 
-#define	SD_IO_USING_1V8			0x80
-#define	SD_IO_USING_3V3			0x7F
-#define	TYPE_A_DRIVING			0x00
+#define	SD_IO_USING_1V8		        0x80
+#define	SD_IO_USING_3V3		        0x7F
+#define	TYPE_A_DRIVING		        0x00
 #define	TYPE_B_DRIVING			0x01
 #define	TYPE_C_DRIVING			0x02
-#define	TYPE_D_DRIVING			0x03
+#define	TYPE_D_DRIVING		        0x03
 
-#define	DDR_FIX_RX_DAT			0x00
-#define	DDR_VAR_RX_DAT			0x80
-#define	DDR_FIX_RX_DAT_EDGE		0x00
-#define	DDR_FIX_RX_DAT_14_DELAY		0x40
-#define	DDR_FIX_RX_CMD			0x00
-#define	DDR_VAR_RX_CMD			0x20
-#define	DDR_FIX_RX_CMD_POS_EDGE		0x00
-#define	DDR_FIX_RX_CMD_14_DELAY		0x10
-#define	SD20_RX_POS_EDGE		0x00
+#define	DDR_FIX_RX_DAT			0x00 
+#define	DDR_VAR_RX_DAT			0x80 
+#define	DDR_FIX_RX_DAT_EDGE		0x00 
+#define	DDR_FIX_RX_DAT_14_DELAY		0x40 
+#define	DDR_FIX_RX_CMD			0x00 
+#define	DDR_VAR_RX_CMD			0x20 
+#define	DDR_FIX_RX_CMD_POS_EDGE		0x00 
+#define	DDR_FIX_RX_CMD_14_DELAY		0x10 
+#define	SD20_RX_POS_EDGE		0x00 
 #define	SD20_RX_14_DELAY		0x08
 #define SD20_RX_SEL_MASK		0x08
 
-#define	DDR_FIX_TX_CMD_DAT		0x00
-#define	DDR_VAR_TX_CMD_DAT		0x80
-#define	DDR_FIX_TX_DAT_14_TSU		0x00
-#define	DDR_FIX_TX_DAT_12_TSU		0x40
-#define	DDR_FIX_TX_CMD_NEG_EDGE		0x00
-#define	DDR_FIX_TX_CMD_14_AHEAD		0x20
+#define	DDR_FIX_TX_CMD_DAT		0x00 
+#define	DDR_VAR_TX_CMD_DAT		0x80 
+#define	DDR_FIX_TX_DAT_14_TSU		0x00 
+#define	DDR_FIX_TX_DAT_12_TSU		0x40 
+#define	DDR_FIX_TX_CMD_NEG_EDGE		0x00 
+#define	DDR_FIX_TX_CMD_14_AHEAD		0x20 
 #define	SD20_TX_NEG_EDGE		0x00
 #define	SD20_TX_14_AHEAD		0x10
 #define SD20_TX_SEL_MASK		0x10
-#define	DDR_VAR_SDCLK_POL_SWAP		0x01
+#define	DDR_VAR_SDCLK_POL_SWAP		0x01 
 
 #define	SD_TRANSFER_START		0x80
 #define	SD_TRANSFER_END			0x40
@@ -139,7 +133,7 @@
 #define	SD_TM_AUTO_WRITE_4		0x02
 #define	SD_TM_AUTO_READ_3		0x05
 #define	SD_TM_AUTO_READ_4		0x06
-#define	SD_TM_CMD_RSP			0x08
+#define	SD_TM_CMD_RSP			0x08		
 #define	SD_TM_AUTO_WRITE_1		0x09
 #define	SD_TM_AUTO_WRITE_2		0x0A
 #define	SD_TM_NORMAL_READ		0x0C
@@ -151,9 +145,10 @@
 #define PHASE_NOT_RESET			0x40
 
 #define DCMPS_CHANGE			0x80
-#define DCMPS_CHANGE_DONE		0x40
+#define DCMPS_CHANGE_DONE	   	0x40
 #define DCMPS_ERROR			0x20
-#define DCMPS_CURRENT_PHASE		0x1F
+#define DCMPS_CURRENT_PHASE     	0x1F
+
 
 #define SD_CLK_DIVIDE_0			0x00
 #define	SD_CLK_DIVIDE_256		0xC0
@@ -175,8 +170,8 @@
 #define DCM_RESET			0x08
 #define DCM_LOCKED			0x04
 #define DCM_208M			0x00
-#define DCM_TX				0x01
-#define DCM_RX				0x02
+#define DCM_TX			        0x01
+#define DCM_RX			        0x02
 
 #define DRP_START			0x80
 #define DRP_DONE			0x40
@@ -194,23 +189,23 @@
 #define	SD_NO_CHECK_CRC16		0x40
 #define SD_NO_CHECK_WAIT_CRC_TO		0x20
 #define	SD_WAIT_BUSY_END		0x08
-#define	SD_NO_WAIT_BUSY_END		0x00
+#define	SD_NO_WAIT_BUSY_END		0x00	
 #define	SD_CHECK_CRC7			0x00
 #define	SD_NO_CHECK_CRC7		0x04
 #define	SD_RSP_LEN_0			0x00
-#define	SD_RSP_LEN_6			0x01
+#define	SD_RSP_LEN_6			0x01			
 #define	SD_RSP_LEN_17			0x02
-#define	SD_RSP_TYPE_R0			0x04
-#define	SD_RSP_TYPE_R1			0x01
-#define	SD_RSP_TYPE_R1b			0x09
-#define	SD_RSP_TYPE_R2			0x02
-#define	SD_RSP_TYPE_R3			0x05
-#define	SD_RSP_TYPE_R4			0x05
-#define	SD_RSP_TYPE_R5			0x01
-#define	SD_RSP_TYPE_R6			0x01
-#define	SD_RSP_TYPE_R7			0x01
+#define	SD_RSP_TYPE_R0		0x04	 
+#define	SD_RSP_TYPE_R1		0x01	
+#define	SD_RSP_TYPE_R1b		0x09	
+#define	SD_RSP_TYPE_R2		0x02	
+#define	SD_RSP_TYPE_R3		0x05	
+#define	SD_RSP_TYPE_R4		0x05	
+#define	SD_RSP_TYPE_R5		0x01	
+#define	SD_RSP_TYPE_R6		0x01	
+#define	SD_RSP_TYPE_R7		0x01	
 
-#define	SD_RSP_80CLK_TIMEOUT_EN		0x01
+#define	SD_RSP_80CLK_TIMEOUT_EN	    0x01
 
 #define	SAMPLE_TIME_RISING		0x00
 #define	SAMPLE_TIME_FALLING		0x80
@@ -230,12 +225,12 @@
 #define	WAIT_INT			0x80
 #define	NO_WAIT_INT			0x00
 #define	NO_AUTO_READ_INT_REG		0x00
-#define	AUTO_READ_INT_REG		0x40
+#define	AUTO_READ_INT_REG		0x40	
 #define	MS_CRC16_ERR			0x20
 #define	MS_RDY_TIMEOUT			0x10
 #define	MS_INT_CMDNK			0x08
 #define	MS_INT_BREQ			0x04
-#define	MS_INT_ERR			0x02
+#define	MS_INT_ERR			0x02 
 #define	MS_INT_CED			0x01
 
 #define	MS_TRANSFER_START		0x80
@@ -255,9 +250,9 @@
 #define	CARD_SHARE_48_XD		0x02
 #define	CARD_SHARE_48_SD		0x04
 #define	CARD_SHARE_48_MS		0x08
-#define CARD_SHARE_BAROSSA_XD		0x00
-#define CARD_SHARE_BAROSSA_SD		0x01
-#define CARD_SHARE_BAROSSA_MS		0x02
+#define CARD_SHARE_BAROSSA_XD		0x00	
+#define CARD_SHARE_BAROSSA_SD		0x01	
+#define CARD_SHARE_BAROSSA_MS		0x02	
 
 #define	MS_DRIVE_8			0x00
 #define	MS_DRIVE_4			0x40
@@ -447,10 +442,6 @@
 #define	CARD_OC_INT_EN			0x20
 #define	CARD_DETECT_EN			0x08
 
-#define MS_DETECT_EN			0x80
-#define MS_OCP_INT_EN			0x40
-#define MS_OCP_INT_CLR			0x20
-#define MS_OC_CLR			0x10
 #define SD_DETECT_EN			0x08
 #define SD_OCP_INT_EN			0x04
 #define SD_OCP_INT_CLR			0x02
@@ -460,9 +451,6 @@
 #define	CARD_OC_NOW			0x08
 #define	CARD_OC_EVER			0x04
 
-#define MS_OCP_DETECT			0x80
-#define MS_OC_NOW			0x40
-#define MS_OC_EVER			0x20
 #define SD_OCP_DETECT			0x08
 #define SD_OC_NOW			0x04
 #define SD_OC_EVER			0x02
@@ -480,16 +468,6 @@
 #define SD_OCP_GLITCH_8000		0x06
 #define SD_OCP_GLITCH_10000		0x07
 
-#define MS_OCP_GLITCH_MASK		0x70
-#define MS_OCP_GLITCH_6_4		(0x00 << 4)
-#define MS_OCP_GLITCH_64		(0x01 << 4)
-#define MS_OCP_GLITCH_640		(0x02 << 4)
-#define MS_OCP_GLITCH_1000		(0x03 << 4)
-#define MS_OCP_GLITCH_2000		(0x04 << 4)
-#define MS_OCP_GLITCH_4000		(0x05 << 4)
-#define MS_OCP_GLITCH_8000		(0x06 << 4)
-#define MS_OCP_GLITCH_10000		(0x07 << 4)
-
 #define OCP_TIME_60			0x00
 #define OCP_TIME_100			(0x01 << 3)
 #define OCP_TIME_200			(0x02 << 3)
@@ -498,15 +476,6 @@
 #define OCP_TIME_800			(0x05 << 3)
 #define OCP_TIME_1100			(0x06 << 3)
 #define OCP_TIME_MASK			0x38
-
-#define MS_OCP_TIME_60			0x00
-#define MS_OCP_TIME_100			(0x01 << 4)
-#define MS_OCP_TIME_200			(0x02 << 4)
-#define MS_OCP_TIME_400			(0x03 << 4)
-#define MS_OCP_TIME_600			(0x04 << 4)
-#define MS_OCP_TIME_800			(0x05 << 4)
-#define MS_OCP_TIME_1100		(0x06 << 4)
-#define MS_OCP_TIME_MASK		0x70
 
 #define SD_OCP_TIME_60			0x00
 #define SD_OCP_TIME_100			0x01
@@ -523,16 +492,6 @@
 #define OCP_THD_191_1080		(0x03 << 6)
 #define OCP_THD_MASK			0xC0
 
-#define MS_OCP_THD_450			0x00
-#define MS_OCP_THD_550			(0x01 << 4)
-#define MS_OCP_THD_650			(0x02 << 4)
-#define MS_OCP_THD_750			(0x03 << 4)
-#define MS_OCP_THD_850			(0x04 << 4)
-#define MS_OCP_THD_950			(0x05 << 4)
-#define MS_OCP_THD_1050			(0x06 << 4)
-#define MS_OCP_THD_1150			(0x07 << 4)
-#define MS_OCP_THD_MASK			0x70
-
 #define SD_OCP_THD_450			0x00
 #define SD_OCP_THD_550			0x01
 #define SD_OCP_THD_650			0x02
@@ -543,14 +502,62 @@
 #define SD_OCP_THD_1150			0x07
 #define SD_OCP_THD_MASK			0x07
 
-#define FPGA_MS_PULL_CTL_EN		0xEF
-#define FPGA_SD_PULL_CTL_EN		0xF7
-#define FPGA_XD_PULL_CTL_EN1		0xFE
-#define FPGA_XD_PULL_CTL_EN2		0xFD
-#define FPGA_XD_PULL_CTL_EN3		0xFB
+#define FPGA_XD_PULL_CTL1_MASK		0x01
+#define FPGA_XD_PULL_CTL2_MASK		0x02
+#define FPGA_XD_PULL_CTL3_MASK		0x04
+#define FPGA_XD_PULL_CTL_MASK		0X07
+#define FPGA_SD_PULL_CTL_MASK		0x08
+#define FPGA_MS_PULL_CTL_MASK		0x10
+#define FPGA_SD_CD_PULL_CTL_MASK	0x20
+#define FPGA_MS_CD_PULL_CTL_MASK	0x40
+#define FPGA_SHARE_CD_PULL_CTL_MASK	0x60
+#define FPGA_XD_PULL_CTL1_DIS		0x01
+#define FPGA_XD_PULL_CTL2_DIS		0x02
+#define FPGA_XD_PULL_CTL3_DIS		0x04
+#define FPGA_XD_PULL_CTL_DIS		0x07
+#define FPGA_SD_PULL_CTL_DIS		0x08
+#define FPGA_MS_PULL_CTL_DIS		0x10
+#define FPGA_SD_CD_PULL_CTL_DIS		0x20
+#define FPGA_MS_CD_PULL_CTL_DIS		0x40
+#define FPGA_SHARE_CD_PULL_CTL_DIS	0x60
+#define FPGA_XD_PULL_CTL1_EN		0x00
+#define FPGA_XD_PULL_CTL2_EN		0x00
+#define FPGA_XD_PULL_CTL3_EN		0x00
+#define FPGA_SD_PULL_CTL_EN		0x00
+#define FPGA_MS_PULL_CTL_EN		0x00
+#define FPGA_SD_CD_PULL_CTL_EN		0x00
+#define FPGA_MS_CD_PULL_CTL_EN		0x00
+#define FPGA_SHARE_CD_PULL_CTL_EN	0x00
 
-#define FPGA_MS_PULL_CTL_BIT		0x10
-#define FPGA_SD_PULL_CTL_BIT		0x08
+#define LDO_PWR_SEL_8411		0x08
+#define LDO_FROM_CARD_8411		0x08
+#define LDO_FROM_DV33_8411		0x00
+#define LDO_PWR_SEL_8402		0x18
+#define LDO_FROM_CARD_8402		0x08
+#define LDO_FROM_DV33_8402		0x10
+#define LDO_FROM_NONE_8402		0x00
+#define FPGA_3V3			0x07
+#define FPGA_1V8			0x01
+#define ASIC_1V7			0x00
+#define ASIC_1V8			0x01
+#define ASIC_1V9			0x02
+#define ASIC_2V0			0x03
+#define ASIC_2V7			0x04
+#define ASIC_2V8			0x05
+#define ASIC_3V2			0x06
+#define ASIC_3V3			0x07
+#define REG_TUNED18			0x07
+#define TUNED18_SHIFT_8402		5
+#define TUNED18_SHIFT_8411		4
+#define SDBUS_IS_3V3			0x04
+#define SD30_3V3			0x04
+#define SD30_1V8			0x00
+#define LDO_POWB			0x03
+#define LDO_ON				0x00
+#define LDO_SUSPEND			0x02
+#define LDO_OFF				0x03
+
+#define LDO_EN				0x08
 
 #define BLINK_EN			0x08
 #define LED_GPIO0			(0 << 4)
@@ -711,6 +718,21 @@
 #define HOST_ENTER_S3		0x02
 #define HOST_ENTER_S1		0x01
 
+#define CD_DISABLE_MASK		0x07
+#define MS_CD_DISABLE		0x04
+#define SD_CD_DISABLE		0x02
+#define XD_CD_DISABLE		0x01
+#define CD_DISABLE		0x07
+#define CD_ENABLE		0x00
+#define MS_CD_EN_ONLY		0x03
+#define SD_CD_EN_ONLY		0x05
+#define XD_CD_EN_ONLY		0x06
+#define FORCE_CD_LOW_MASK	0x38
+#define FORCE_CD_XD_LOW		0x08
+#define FORCE_CD_SD_LOW		0x10
+#define FORCE_CD_MS_LOW		0x20
+#define CD_AUTO_DISABLE		0x40
+
 #define AUX_PWR_DETECTED	0x01
 
 #define PHY_DEBUG_MODE		0x01
@@ -761,10 +783,8 @@
 #define SELECT_1LUN		0x08
 
 #define PWR_GATE_EN		0x01
-#define LDO3318_PWR_MASK	0x06
-#define LDO_ON			0x00
-#define LDO_SUSPEND		0x04
-#define LDO_OFF			0x06
+
+#define CR_SOFT_PFM_EN		0x02
 
 #define SD_CFG1			0xFDA0
 #define SD_CFG2			0xFDA1
@@ -789,13 +809,13 @@
 #define SD_CMD_STATE		0xFDB5
 #define SD_DATA_STATE		0xFDB6
 
-#define	DCM_DRP_CTL		0xFC23
+#define	DCM_DRP_CTL         	0xFC23
 #define	DCM_DRP_TRIG		0xFC24
-#define	DCM_DRP_CFG		0xFC25
-#define	DCM_DRP_WR_DATA_L	0xFC26
-#define	DCM_DRP_WR_DATA_H	0xFC27
-#define	DCM_DRP_RD_DATA_L	0xFC28
-#define	DCM_DRP_RD_DATA_H	0xFC29
+#define	DCM_DRP_CFG         	0xFC25
+#define	DCM_DRP_WR_DATA_L   	0xFC26
+#define	DCM_DRP_WR_DATA_H   	0xFC27
+#define	DCM_DRP_RD_DATA_L   	0xFC28
+#define	DCM_DRP_RD_DATA_H   	0xFC29
 #define SD_VPCLK0_CTL		0xFC2A
 #define SD_VPCLK1_CTL		0xFC2B
 #define SD_DCMPS0_CTL		0xFC2C
@@ -838,6 +858,8 @@
 #define RCCTL			0xFC14
 
 #define FPGA_PULL_CTL		0xFC1D
+
+#define SYS_VER			0xFC32
 
 #define CARD_PULL_CTL1		0xFD60
 #define CARD_PULL_CTL2		0xFD61
@@ -891,16 +913,15 @@
 #define PME_FORCE_CTL			0xFE56
 #define ASPM_FORCE_CTL			0xFE57
 #define PM_CLK_FORCE_CTL		0xFE58
+#define FUNC1_FORCE_CTL			0xFE59
 #define PERST_GLITCH_WIDTH		0xFE5C
 #define CHANGE_LINK_STATE		0xFE5B
 #define RESET_LOAD_REG			0xFE5E
 #define HOST_SLEEP_STATE		0xFE60
-#define MAIN_PWR_OFF_CTL		0xFE70
+#define MAIN_PWR_OFF_CTL		0xFE70	
+#define SDIO_CFG			0xFE70	
 
 #define NFTS_TX_CTRL			0xFE72
-
-#define PWR_GATE_CTRL			0xFE75
-#define PWD_SUSPEND_EN			0xFE76
 
 #define EFUSE_CONTENT			0xFE5F
 
@@ -946,14 +967,20 @@
 #define MS_SECTOR_CNT_H			0xFD47
 #define MS_DBUS_H			0xFD48
 
+#define CD_PAD_CTL			0xFD73
+
 #define SSC_CTL1			0xFC11
 #define SSC_CTL2			0xFC12
 
 #define OCPCTL				0xFC15
 #define OCPSTAT				0xFC16
-#define OCPCLR				0xFC17
+#define OCPCLR				0xFC17		
+#define OCPGLITCH			0xFC17		
 #define OCPPARA1			0xFC18
 #define OCPPARA2			0xFC19
+
+#define LDO_CTL				0xFC1E
+#define LDO_SSC_CTL			0xFC1F
 
 #define EFUSE_OP			0xFC20
 #define EFUSE_CTRL			0xFC21
@@ -1010,10 +1037,8 @@ int switch_ssc_clock(struct rtsx_chip *chip, int clk);
 int switch_normal_clock(struct rtsx_chip *chip, int clk);
 int enable_card_clock(struct rtsx_chip *chip, u8 card);
 int disable_card_clock(struct rtsx_chip *chip, u8 card);
-int card_rw(struct scsi_cmnd *srb, struct rtsx_chip *chip,
-	u32 sec_addr, u16 sec_cnt);
-void trans_dma_enable(enum dma_data_direction dir,
-		struct rtsx_chip *chip, u32 byte_cnt, u8 pack_size);
+int card_rw(struct scsi_cmnd *srb, struct rtsx_chip *chip, u32 sec_addr, u16 sec_cnt);
+void trans_dma_enable(enum dma_data_direction dir, struct rtsx_chip *chip, u32 byte_cnt, u8 pack_size);
 void toggle_gpio(struct rtsx_chip *chip, u8 gpio);
 void turn_on_led(struct rtsx_chip *chip, u8 gpio);
 void turn_off_led(struct rtsx_chip *chip, u8 gpio);
@@ -1024,6 +1049,8 @@ int detect_card_cd(struct rtsx_chip *chip, int card);
 int check_card_exist(struct rtsx_chip *chip, unsigned int lun);
 int check_card_ready(struct rtsx_chip *chip, unsigned int lun);
 int check_card_wp(struct rtsx_chip *chip, unsigned int lun);
+int check_card_fail(struct rtsx_chip *chip, unsigned int lun);
+int check_card_ejected(struct rtsx_chip *chip, unsigned int lun);
 void eject_card(struct rtsx_chip *chip, unsigned int lun);
 u8 get_lun_card(struct rtsx_chip *chip, unsigned int lun);
 
@@ -1031,12 +1058,12 @@ static inline u32 get_card_size(struct rtsx_chip *chip, unsigned int lun)
 {
 #ifdef SUPPORT_SD_LOCK
 	struct sd_info *sd_card = &(chip->sd_card);
-
-	if ((get_lun_card(chip, lun) == SD_CARD) &&
-		(sd_card->sd_lock_status & SD_LOCKED))
+	
+	if ((get_lun_card(chip, lun) == SD_CARD) && (sd_card->sd_lock_status & SD_LOCKED)) {
 		return 0;
-
-	return chip->capacity[lun];
+	} else {
+		return chip->capacity[lun];
+	}
 #else
 	return chip->capacity[lun];
 #endif
@@ -1046,10 +1073,11 @@ static inline int switch_clock(struct rtsx_chip *chip, int clk)
 {
 	int retval = 0;
 
-	if (chip->asic_code)
+	if (chip->asic_code) {
 		retval = switch_ssc_clock(chip, clk);
-	else
+	} else {
 		retval = switch_normal_clock(chip, clk);
+	}
 
 	return retval;
 }
@@ -1059,43 +1087,34 @@ int card_power_off(struct rtsx_chip *chip, u8 card);
 
 static inline int card_power_off_all(struct rtsx_chip *chip)
 {
-	int retval;
-
-	retval = rtsx_write_register(chip, CARD_PWR_CTL, 0x0F, 0x0F);
-	if (retval) {
-		rtsx_trace(chip);
-		return retval;
-	}
-
+	RTSX_WRITE_REG(chip, CARD_PWR_CTL, 0x0F, 0x0F);
+	
 	return STATUS_SUCCESS;
 }
 
 static inline void rtsx_clear_xd_error(struct rtsx_chip *chip)
 {
-	rtsx_write_register(chip, CARD_STOP, XD_STOP | XD_CLR_ERR,
-			XD_STOP | XD_CLR_ERR);
+	rtsx_write_register(chip, CARD_STOP, XD_STOP | XD_CLR_ERR, XD_STOP | XD_CLR_ERR);
 }
 
 static inline void rtsx_clear_sd_error(struct rtsx_chip *chip)
 {
-	rtsx_write_register(chip, CARD_STOP, SD_STOP | SD_CLR_ERR,
-			SD_STOP | SD_CLR_ERR);
+	rtsx_write_register(chip, CARD_STOP, SD_STOP | SD_CLR_ERR, SD_STOP | SD_CLR_ERR);
 }
 
 static inline void rtsx_clear_ms_error(struct rtsx_chip *chip)
 {
-	rtsx_write_register(chip, CARD_STOP, MS_STOP | MS_CLR_ERR,
-			MS_STOP | MS_CLR_ERR);
+	rtsx_write_register(chip, CARD_STOP, MS_STOP | MS_CLR_ERR, MS_STOP | MS_CLR_ERR);
 }
 
 static inline void rtsx_clear_spi_error(struct rtsx_chip *chip)
 {
-	rtsx_write_register(chip, CARD_STOP, SPI_STOP | SPI_CLR_ERR,
-			SPI_STOP | SPI_CLR_ERR);
+	rtsx_write_register(chip, CARD_STOP, SPI_STOP | SPI_CLR_ERR, SPI_STOP | SPI_CLR_ERR);
 }
 
 #ifdef SUPPORT_SDIO_ASPM
 void dynamic_configure_sdio_aspm(struct rtsx_chip *chip);
 #endif
 
-#endif  /* __REALTEK_RTSX_CARD_H */
+#endif  
+

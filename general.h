@@ -1,7 +1,7 @@
 /* Driver for Realtek PCI-Express card reader
  * Header file
  *
- * Copyright(c) 2009-2013 Realtek Semiconductor Corp. All rights reserved.
+ * Copyright(c) 2009 Realtek Semiconductor Corp. All rights reserved.  
  *
  * This program is free software; you can redistribute it and/or modify it
  * under the terms of the GNU General Public License as published by the
@@ -14,11 +14,11 @@
  * General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License along
- * with this program; if not, see <http://www.gnu.org/licenses/>.
+ * with this program; if not, see <http:
  *
  * Author:
- *   Wei WANG (wei_wang@realsil.com.cn)
- *   Micky Ching (micky_ching@realsil.com.cn)
+ *   wwang (wei_wang@realsil.com.cn)
+ *   No. 450, Shenhu Road, Suzhou Industry Park, Suzhou, China
  */
 
 #ifndef __RTSX_GENERAL_H
@@ -26,6 +26,11 @@
 
 #include "rtsx.h"
 
+#if DBG
+extern int trigger_enabled;
+#endif
+
 int bit1cnt_long(u32 data);
 
-#endif /* __RTSX_GENERAL_H */
+#endif 
+
