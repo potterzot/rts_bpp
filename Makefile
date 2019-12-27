@@ -31,16 +31,18 @@ obj-m += $(TARGET_MODULE).o
 $(TARGET_MODULE)-objs := rtsx.o rtsx_chip.o rtsx_transport.o rtsx_scsi.o rtsx_card.o \
 			 general.o sd.o xd.o ms.o
 
-MOD_DIR=/lib/modules/$(shell uname -r)
+KVERSION := $(shell uname -r)
+KDIR := /lib/modules/$(KVERSION)/build
+PWD := $(shell pwd)
 
 default:
-	cp -f ./define.release ./define.h
-	$(MAKE) -C $(MOD_DIR)/build/ SUBDIRS=$(CURDIR) modules
+	$(MAKE) -C $(KDIR) M=$(PWD) modules
+clean:
+	$(MAKE) -C $(KDIR) M=$(PWD) clean
+	rm -rf Module.markers module.order module.sysvers 
 debug:
 	cp -f ./define.debug ./define.h
 	$(MAKE) -C $(MOD_DIR)/build/ SUBDIRS=$(CURDIR) modules
-install:
-	cp $(TARGET_MODULE).ko $(MOD_DIR)/kernel/drivers/scsi -f
 clean:
 	rm -f *.o *.ko
 	rm -f $(TARGET_MODULE).mod.c
