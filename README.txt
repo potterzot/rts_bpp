@@ -18,3 +18,11 @@ Build Steps
 4) reboot your computer
 
 Note: Root privilege is required in step 2 and 3
+
+
+Notes
+=====
+
+Patch for this release is taken from https://bbs.archlinux.org/viewtopic.php?pid=2017456#p2017456
+
+

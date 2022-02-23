@@ -43,6 +43,8 @@ clean:
 debug:
 	cp -f ./define.debug ./define.h
 	$(MAKE) -C $(MOD_DIR)/build/ SUBDIRS=$(CURDIR) modules
+install:
+	cp $(TARGET_MODULE).ko $(KDIR)/drivers/scsi -f
 clean:
 	rm -f *.o *.ko
 	rm -f $(TARGET_MODULE).mod.c
