@@ -525,8 +525,16 @@ SkipForAbort:
 	 * the structure) -- this is necessary for the module-remove case.
 	 * This is important in preemption kernels, which transfer the flow
 	 * of execution immediately upon a complete().
+         *
+         * complete_and_exit() was renamed to kthread_complete_and_exit as
+         * of Linux 5.17.
+         * https://lore.kernel.org/lkml/20211208202532.16409-8-ebiederm@xmission.com/
 	 */
-	complete_and_exit(&dev->control_exit, 0);
+	#if LINUX_VERSION_CODE >= KERNEL_VERSION(5, 17, 0)
+		kthread_complete_and_exit(&dev->control_exit, 0);
+	#else
+		complete_and_exit(&dev->control_exit, 0);
+	#endif
 }
 
 
@@ -570,7 +578,11 @@ static int rtsx_polling_thread(void * __dev)
 		mutex_unlock(&dev->dev_mutex);
 	}
 
-	complete_and_exit(&dev->polling_exit, 0);
+	#if LINUX_VERSION_CODE >= KERNEL_VERSION(5, 17, 0)
+		kthread_complete_and_exit(&dev->polling_exit, 0);
+	#else
+		complete_and_exit(&dev->polling_exit, 0);
+	#endif
 }
 
 /*
@@ -758,7 +770,11 @@ static int rtsx_scan_thread(void * __dev)
 		
 	}
 
-	complete_and_exit(&dev->scanning_done, 0);
+	#if LINUX_VERSION_CODE >= KERNEL_VERSION(5, 17, 0)
+		kthread_complete_and_exit(&dev->scanning_done, 0);
+	#else
+		complete_and_exit(&dev->scanning_done, 0);
+	#endif
 }
 
 static void rtsx_init_options(struct rtsx_chip *chip)
